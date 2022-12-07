@@ -54,7 +54,7 @@ class QuestionDetailed(QuestionCreate):
 
 class Quiz(QuizBase):
     id: int
-    questions: list[QuestionCreate]
+    questions: list[Question]
 
 class UserBase(BaseModel):
     telegram_id: str
