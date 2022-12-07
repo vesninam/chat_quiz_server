@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from datetime import datetime
 
 class QuestionCreate(BaseModel):
+    id: int
     description: str
     answer1: str
     answer2: str
@@ -12,6 +13,17 @@ class QuestionCreate(BaseModel):
     
     class Config:
         orm_mode = True
+        schema_extra = {
+            "example": {
+                "description": "What is liquid?",
+                "answer1": "wood",
+                "answer2": "ice",
+                "answer3": "water",
+                "answer4": "juice",
+                "correct_answers": "3,4",
+                "topics": "materials, common sense",
+            }
+        }
 
 
 class QuizBase(BaseModel):
@@ -34,7 +46,9 @@ class QuestionResponse(BaseModel):
 
 
 class Question(QuestionCreate):
-    id: int
+    pass
+    
+class QuestionDetailed(QuestionCreate):
     quizes: list[QuizBase] = []
     responses: list[QuestionResponse] = []
 
@@ -53,7 +67,9 @@ class UserCreate(UserBase):
 class User(UserBase):
     id: int
     is_active: bool
-    responses: list[QuestionResponse] = []
-
     class Config:
         orm_mode = True
+        
+class UserDetailed(User):
+    responses: list[QuestionResponse] = []
+

@@ -41,6 +41,14 @@ def read_user(user_id: int,
         raise HTTPException(status_code=404, detail="User not found")
     return db_user
 
+@app.get("/users_by_tid/{telegram_id}", response_model=schemas.User)
+def read_user(telegram_id: int,
+              db: Session = Depends(get_db)):
+    db_user = crud.get_user_by_tid(db, telegram_id=telegram_id)
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    return db_user
+
 
 @app.post("/questions/", response_model=schemas.Question)
 def create_question(question: schemas.QuestionCreate, 
@@ -52,6 +60,14 @@ def read_questions(skip: int = 0, limit: int = 100,
                    db: Session = Depends(get_db)):
     questions = crud.get_questions(db=db, skip=skip, limit=limit)
     return questions
+
+@app.get("/questions/{question_id}", response_model=schemas.Question)
+def read_questions(question_id: int, 
+                   db: Session = Depends(get_db)):
+    db_question = crud.get_question_by_id(db=db, question_id=question_id)
+    if not db_question:
+        raise HTTPException(status_code=404, detail="Could not find question")
+    return db_quizquestion
 
 
 @app.post("/quiz/", response_model=schemas.Quiz)
@@ -74,9 +90,23 @@ def add_question_quiz(quiz_id: int,
                                      question_id=question_id)
 
 @app.get("/quiz/", response_model=list[schemas.Quiz])
-def read_quiz(skip: int = 0, limit: int = 100, 
+def read_quizes(skip: int = 0, limit: int = 100, 
               db: Session = Depends(get_db)):
     quizes = crud.get_quizes(db=db, skip=skip, limit=limit)
+    return quizes
+
+@app.get("/quiz/{quiz_id}", response_model=schemas.Quiz)
+def read_quiz(quiz_id: int, 
+              db: Session = Depends(get_db)):
+    db_quiz = crud.get_quiz_by_id(db, quiz_id=quiz_id)
+    if not db_quiz:
+        raise HTTPException(status_code=404, detail="Could not find quiz")
+    return db_quiz
+
+@app.get("/quiz/active/", response_model=list[schemas.Quiz])
+def read_active_quizes(skip: int = 0, limit: int = 100, 
+                       db: Session = Depends(get_db)):
+    quizes = crud.get_quizes_active(db=db, skip=skip, limit=limit)
     return quizes
 
 @app.post("/user_responses/", response_model=schemas.QuestionResponse)
@@ -85,6 +115,7 @@ def create_question_response(question_response:schemas.QuestionResponse,
     res = crud.create_response(db=db, 
                                question_response=question_response)
     return res
+
 
 @app.get("/responses/", response_model=list[schemas.QuestionResponse])
 def read_question_response(skip: int = 0, limit: int = 100, 

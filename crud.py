@@ -44,6 +44,14 @@ def get_quizes(db: Session,
         offset(skip).limit(limit).all()
     return res
 
+def get_quizes_active(db: Session, 
+                      skip: int = 0, limit: int = 100):
+    _now = datetime.now()
+    res = db.query(models.Quiz).filter(models.Quiz.start_time <= _now). \
+                                filter(models.Quiz.finish_time >= _now).all()
+    return res
+
+
 def get_quiz_by_id(db: Session, 
                    quiz_id: int):
     res = db.query(models.Quiz). \
