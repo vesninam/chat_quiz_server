@@ -2,7 +2,6 @@ from pydantic import BaseModel
 from datetime import datetime
 
 class QuestionCreate(BaseModel):
-    id: int
     description: str
     answer1: str
     answer2: str
@@ -46,7 +45,7 @@ class QuestionResponse(BaseModel):
 
 
 class Question(QuestionCreate):
-    pass
+    id: int
     
 class QuestionDetailed(QuestionCreate):
     quizes: list[QuizBase] = []
